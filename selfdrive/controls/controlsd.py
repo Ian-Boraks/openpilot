@@ -20,6 +20,7 @@ from openpilot.common.realtime import config_realtime_process, Priority, Ratekee
 from openpilot.common.swaglog import cloudlog
 
 from openpilot.selfdrive.car.car_helpers import get_startup_event
+import openpilot.selfdrive.car.values as CarV
 from openpilot.selfdrive.car.card import CarD
 from openpilot.selfdrive.controls.lib.alertmanager import AlertManager, set_offroad_alert
 from openpilot.selfdrive.controls.lib.drive_helpers import VCruiseHelper, clip_curvature
@@ -420,8 +421,9 @@ class Controls:
     model_fcw = self.sm['modelV2'].meta.hardBrakePredicted and not CS.brakePressed and not stock_long_is_braking
     planner_fcw = self.sm['longitudinalPlan'].fcw and self.enabled
     if planner_fcw or model_fcw:
-      self.events.add(EventName.fcw)
-      self.fcw_random_event_triggered = True
+      if self.CP.carFingerprint not in [CarV.MAZDA.CX9_2021, CarV.MAZDA.CX5_2022]:
+        self.events.add(EventName.fcw)
+        self.fcw_random_event_triggered = True
     elif self.fcw_random_event_triggered and self.frogpilot_toggles.random_events:
       self.events.add(EventName.yourFrogTriedToKillMe)
       self.fcw_random_event_triggered = False
