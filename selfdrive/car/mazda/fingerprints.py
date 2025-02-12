@@ -4,7 +4,7 @@ from openpilot.selfdrive.car.mazda.values import CAR
 Ecu = car.CarParams.Ecu
 
 FW_VERSIONS = {
-  CAR.CX5: { # Just a placeholder, no cars will hit this
+  CAR.MAZDA_CX5: { # Just a placeholder, no cars will hit this
     (Ecu.eps, 0x730, None): [
       b'KSD5-3210X-X-00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
@@ -24,7 +24,7 @@ FW_VERSIONS = {
       b'PG69-21PS1-X\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
     ],
   },
-  CAR.CX5_2022: { # make all CX-5s fall under 22 year
+  CAR.MAZDA_CX5_2022: { # make all CX-5s fall under 22 year
     (Ecu.eps, 0x730, None): [
       # Use the EPS FW from CX-5 2022 with older CX-5s to force them to FP as 2022
       b'KSD5-3210X-C-00\x00\x00\x00\x00\x00\x00\x00\x00\x00',
