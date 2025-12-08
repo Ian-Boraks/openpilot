@@ -23,6 +23,9 @@ class FrogPilotCard:
           self.always_on_lateral_allowed = not self.always_on_lateral_allowed
         elif be.type == ButtonType.mainCruise and be.pressed and frogpilot_toggles.always_on_lateral_main:
           self.always_on_lateral_allowed = not self.always_on_lateral_allowed
+    elif self.CP.brand == "mazda":
+      # Mazda AOL persistence: stays allowed after cruise was set once, until cruise is turned off
+      self.always_on_lateral_allowed = frogpilotCarState.alwaysOnLateralAllowed
     elif frogpilot_toggles.always_on_lateral_main:
       self.always_on_lateral_allowed = carState.cruiseState.available
     else:
