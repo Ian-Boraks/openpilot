@@ -18,8 +18,6 @@ class CarState(CarStateBase):
     self.crz_btns_counter = 0
     self.acc_active_last = False
     self.lkas_allowed_speed = False
-    self.lkas_disabled = False
-    self.cruise_previously_engaged = False
 
     self.distance_button = 0
 
@@ -90,13 +88,6 @@ class CarState(CarStateBase):
     ret.cruiseState.standstill = cp.vl["PEDALS"]["STANDSTILL"] == 1
     ret.cruiseState.speed = cp.vl["CRZ_EVENTS"]["CRZ_SPEED"] * CV.KPH_TO_MS
 
-    # Track if cruise has been fully engaged at least once (for AOL persistence)
-    if ret.cruiseState.enabled:
-      self.cruise_previously_engaged = True
-    elif not ret.cruiseState.available:
-      # Reset when cruise control is turned off completely
-      self.cruise_previously_engaged = False
-
     # stock lkas should be on
     # TODO: is this needed?
     ret.invalidLkasSetting = cp_cam.vl["CAM_LANEINFO"]["LANE_LINES"] == 0
@@ -132,12 +123,6 @@ class CarState(CarStateBase):
 
     # FrogPilot variables
     fp_ret = custom.FrogPilotCarState.new_message()
-
-    # For AOL persistence: allow lateral control to stay active after cruise was engaged once
-    # This makes cruiseState.available act like "enabled" for AOL purposes once cruise has been set
-    # Only apply this behavior when Always On Lateral is enabled
-    if frogpilot_toggles.always_on_lateral:
-      fp_ret.alwaysOnLateralAllowed = self.cruise_previously_engaged and ret.cruiseState.available
 
     return ret, fp_ret
 

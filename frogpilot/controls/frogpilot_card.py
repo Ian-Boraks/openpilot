@@ -15,6 +15,7 @@ class FrogPilotCard:
     self.params_memory = Params(memory=True)
 
     self.always_on_lateral_allowed = False
+    self.cruise_previously_engaged = False  # For Mazda AOL persistence
 
   def update(self, carState, frogpilotCarState, sm, frogpilot_toggles):
     if self.CP.brand == "hyundai":
@@ -25,7 +26,13 @@ class FrogPilotCard:
           self.always_on_lateral_allowed = not self.always_on_lateral_allowed
     elif self.CP.brand == "mazda":
       # Mazda AOL persistence: stays allowed after cruise was set once, until cruise is turned off
-      self.always_on_lateral_allowed = frogpilotCarState.alwaysOnLateralAllowed
+      # Track if cruise has been fully engaged at least once
+      if carState.cruiseState.enabled:
+        self.cruise_previously_engaged = True
+      elif not carState.cruiseState.available:
+        # Reset when cruise control is turned off completely
+        self.cruise_previously_engaged = False
+      self.always_on_lateral_allowed = self.cruise_previously_engaged and carState.cruiseState.available and frogpilot_toggles.always_on_lateral
     elif frogpilot_toggles.always_on_lateral_main:
       self.always_on_lateral_allowed = carState.cruiseState.available
     else:
