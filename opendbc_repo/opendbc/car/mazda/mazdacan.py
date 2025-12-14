@@ -1,19 +1,20 @@
 from opendbc.car.mazda.values import Buttons, MazdaFlags
 
 
-def create_steering_control(packer, CP, frame, apply_torque, lkas):
+def create_steering_control(packer, CP, frame, apply_torque, lkas, lat_active=False):
 
   tmp = apply_torque + 2048
 
   lo = tmp & 0xFF
   hi = tmp >> 8
 
-  # copy values from camera
+  # copy values from camera, but override error bits when lateral control is active
+  # This prevents the stock camera's error state from interfering with AOL
   b1 = int(lkas["BIT_1"])
-  er1 = int(lkas["ERR_BIT_1"])
+  er1 = 0 if lat_active else int(lkas["ERR_BIT_1"])
   lnv = 0
   ldw = 0
-  er2 = int(lkas["ERR_BIT_2"])
+  er2 = 0 if lat_active else int(lkas["ERR_BIT_2"])
 
   # Some older models do have these, newer models don't.
   # Either way, they all work just fine if set to zero.

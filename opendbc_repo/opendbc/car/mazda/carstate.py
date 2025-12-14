@@ -116,7 +116,9 @@ class CarState(CarStateBase):
     # camera signals
     self.cam_lkas = cp_cam.vl["CAM_LKAS"]
     self.cam_laneinfo = cp_cam.vl["CAM_LANEINFO"]
-    ret.steerFaultPermanent = cp_cam.vl["CAM_LKAS"]["ERR_BIT_1"] == 1
+    # Ignore camera error bit when AOL is enabled - the stock camera may report errors
+    # when cruise is not active, but we want to maintain lateral control for AOL
+    ret.steerFaultPermanent = cp_cam.vl["CAM_LKAS"]["ERR_BIT_1"] == 1 and not frogpilot_toggles.always_on_lateral
 
     # TODO: add button types for inc and dec
     ret.buttonEvents = create_button_events(self.distance_button, prev_distance_button, {1: ButtonType.gapAdjustCruise})
