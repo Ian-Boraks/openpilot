@@ -317,13 +317,13 @@ class Car:
       while True:
         self.step()
         self.rk.monitor_time()
+
+        # FrogPilot variables - update toggles when changed
+        if self.sm['frogpilotPlan'].togglesUpdated:
+          self.frogpilot_toggles = get_frogpilot_toggles()
     finally:
       e.set()
       t.join()
-
-      # FrogPilot variables
-      if self.sm['frogpilotPlan'].togglesUpdated:
-        self.frogpilot_toggles = get_frogpilot_toggles()
 
 
 def main():
