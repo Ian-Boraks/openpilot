@@ -90,7 +90,9 @@ class CarState(CarStateBase):
 
     # stock lkas should be on
     # TODO: is this needed?
-    ret.invalidLkasSetting = cp_cam.vl["CAM_LANEINFO"]["LANE_LINES"] == 0
+    # Ignore this check when AOL is enabled - the stock camera may report no lanes
+    # when cruise is not active, but we want to maintain lateral control for AOL
+    ret.invalidLkasSetting = cp_cam.vl["CAM_LANEINFO"]["LANE_LINES"] == 0 and not frogpilot_toggles.always_on_lateral
 
     if ret.cruiseState.enabled:
       if not self.lkas_allowed_speed and self.acc_active_last:
@@ -107,7 +109,8 @@ class CarState(CarStateBase):
       ret.steerFaultTemporary = False
     else:
       # On if no driver torque the last 5 seconds
-      ret.steerFaultTemporary = cp.vl["STEER_RATE"]["HANDS_OFF_5_SECONDS"] == 1
+      # Ignore when AOL is enabled to allow lateral control without cruise
+      ret.steerFaultTemporary = cp.vl["STEER_RATE"]["HANDS_OFF_5_SECONDS"] == 1 and not frogpilot_toggles.always_on_lateral
 
     self.acc_active_last = ret.cruiseState.enabled
 
