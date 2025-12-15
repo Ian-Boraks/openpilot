@@ -33,10 +33,11 @@ class FrogPilotCard:
         # Reset when cruise control is turned off completely
         self.cruise_previously_engaged = False
       self.always_on_lateral_allowed = self.cruise_previously_engaged and carState.cruiseState.available and frogpilot_toggles.always_on_lateral
-    elif frogpilot_toggles.always_on_lateral_main:
-      self.always_on_lateral_allowed = carState.cruiseState.available
     else:
-      self.always_on_lateral_allowed = carState.cruiseState.enabled
+      # Latch AOL allowed when cruise engages OR when main toggle is on (latching prevents gap during disengage)
+      self.always_on_lateral_allowed |= carState.cruiseState.enabled or frogpilot_toggles.always_on_lateral_main
+      # Clear AOL when cruise main is turned off (available = False)
+      self.always_on_lateral_allowed &= carState.cruiseState.available
 
     self.always_on_lateral_enabled = self.always_on_lateral_allowed and frogpilot_toggles.always_on_lateral_set
     self.always_on_lateral_enabled &= carState.gearShifter not in NON_DRIVING_GEARS
